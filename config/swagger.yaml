@@ -1,0 +1,99 @@
+openapi: 3.0.2
+info:
+  version: 1.0.0
+  title: Habits API
+  description: A minimal and easy API,
+  license: 
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+servers: 
+    - url: https://book-read.goit.co.ua/api/v1
+      description: The production API server
+    - url: http://localhost:5000/api/v1,
+      description: The production API server
+components: 
+  schemas:
+    Book: 
+      type: object
+      properties: 
+        title: 
+          type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+tags: 
+  - name: Public
+    description: Routes
+  - name: Protected
+    description: Need token
+paths:
+  /auth/google:
+    get:
+      tags: ['Public']
+      summary: Redirect to Google service, after rediterted to http://localhost:3000/library?token=
+      responses:
+        301:
+          description: Redirect to google Auth service
+  /books: 
+    get: 
+      tags: ['Protected']
+      parameters:
+        - in: header
+          name: JWT
+          schema: 
+            $ref: '#/components/securitySchemes/jwt'
+      summary: Return list of books by state Readed, PlanReads, Reading
+      responses: 
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    default: ["OK", "BAD"]
+                  books:
+                      type: object
+        404: 
+          description: BAD
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: 
+                  status: 
+                    type: string
+                    default: BAD
+                  error:
+                    type: object
+                  message:
+                    type: string
+                    example: Not found
+  /books/create:
+    post:
+      tags: ["Protected"]
+      parameters:
+        - in: header
+          name: JWT
+          schema: 
+            $ref: "#/components/securitySchemes/jwt"
+      summary: Return list of books by state Readed, PlanReads, Reading
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: 
+                  status: 
+                    type: string
+                    default: OK
+                  book: 
+                    type: object
+                    properties:
+                      test: 
+                        type: string

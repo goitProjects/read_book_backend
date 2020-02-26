@@ -1,0 +1,1132 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Habits API",
+    "description": "A minimal and easy API",
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "basePath": "/api",
+  "schemes": ["https", "http"],
+  "servers": [
+    {
+      "url": "https://book-read.goit.co.ua/api/v1",
+      "description": "The production API server"
+    },
+    {
+      "url": "http://localhost:5000/api/v1",
+      "description": "The production API server"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "BooksCreateRequest": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "author": {
+            "type": "string"
+          },
+          "year": {
+            "type": "number"
+          },
+          "pagesCount": {
+            "type": "number"
+          },
+          "comment": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "number",
+            "enum": [1, 2, 3, 4, 5]
+          }
+        },
+        "required": ["title", "pagesCount"]
+      },
+      "BookRespond": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "author": {
+            "type": "string"
+          },
+          "pagesCount": {
+            "type": "number"
+          },
+          "comment": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "number",
+            "enum": [0, 1, 2, 3, 4, 5]
+          },
+          "status": {
+            "type": "string",
+            "enum": ["read", "planned", "reading"],
+            "default": "planned"
+          }
+        }
+      },
+      "TrainingRespond": {
+        "type": "object",
+        "properties": {
+          "trainingId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "books": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "book": {
+                  "type": "object",
+                  "properties": {
+                    "bookId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "year": { "type": "number" },
+                    "pageCount": { "type": "number" },
+                    "author": { "type": "string" }
+                  }
+                },
+                "trainingBookId": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "isRead": {
+                  "type": "boolean",
+                  "default": false
+                }
+              }
+            }
+          },
+          "booksCount": { "type": "number" },
+          "unreadCount": { "type": "number" },
+          "readPagesCount": { "type": "number" },
+          "avgReadPages": { "type": "number" },
+          "isDone": { "type": "boolean", "default": false },
+          "pagesReadResult": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "date": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "count": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      },
+      "TrainingRequestBody": {
+        "type": "object",
+        "properties": {
+          "books": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "book": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            }
+          },
+          "timeStart": {
+            "type": "string",
+            "format": "date"
+          },
+          "timeEnd": {
+            "type": "string",
+            "format": "date"
+          },
+          "avgReadPages": {
+            "type": "number"
+          }
+        }
+      },
+      "AuthLoginRegisterResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success", "OK", "BAD", true, false]
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "userData": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "object",
+                    "properties": {
+                      "fullName": {
+                        "type": "string"
+                      },
+                      "firstName": {
+                        "type": "string"
+                      },
+                      "lastName": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "haveTraining": {
+                    "type": "boolean",
+                    "default": false
+                  }
+                }
+              },
+              "token": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "AuthLoginRequestBody": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "AuthRegisterRequestBody": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string"
+          },
+          "name": {
+            "type": "object",
+            "properties": {
+              "fullName": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "jwt": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "bearerAuth": {
+      "type": "http",
+      "scheme": "bearer",
+      "bearerFormat": "JWT"
+    }
+  },
+  "tags": [
+    {
+      "name": "Public",
+      "description": "Routes"
+    },
+    {
+      "name": "Protected",
+      "description": "Need token"
+    }
+  ],
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "tags": ["Public"],
+        "description": "",
+        "summary": "Login to the app (API)",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthLoginRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthLoginRegisterResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "tags": ["Public"],
+        "summary": "Register user in App",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthRegisterRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "return user data if success registered in App",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthLoginRegisterResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "If some data requestBody false"
+          },
+          "422": {
+            "description": "Some fields pass"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/auth/google": {
+      "get": {
+        "tags": ["Public"],
+        "summary": "Auth user from GoogleAuth, after redirected to http://localhost:3000/library",
+        "responses": {
+          "301": {
+            "description": "Redirect to google Auth service after to local",
+            "content": {
+              "application/json": {
+                "schemas": {
+                  "$ref": "#/components/schemas/AuthLoginRegisterResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": ["Protected"],
+        "description": "",
+        "summary": "Logout from app",
+        "security": ["bearerAuth"],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "string",
+                      "default": "OK",
+                      "example": "OK"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "User successful logout",
+                      "default": "User successful logout"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/me": {
+      "get": {
+        "tags": ["Protected"],
+        "security": ["bearerAuth"],
+        "summary": "Get user data and check token validation",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "description": "Get user data by token",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "applecation/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthLoginRegisterResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/books": {
+      "get": {
+        "tags": ["Protected"],
+        "security": ["bearerAuth"],
+        "summary": "Get all users books",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "default": ["OK", "BAD"]
+                    },
+                    "books": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/BookRespond"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "BAD",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": "BAD",
+                    "error": {
+                      "type": "object",
+                      "properties": {}
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/books/create": {
+      "post": {
+        "tags": ["Protected"],
+        "description": "Create new book (add to library)",
+        "summary": "Create new book",
+        "security": ["bearerAuth"],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "applecation/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BooksCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": "OK",
+                    "book": {
+                      "$ref": "#/components/schemas/BookRespond"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/books/{bookId}": {
+      "patch": {
+        "tags": ["Protected"],
+        "summary": "Update book fields",
+        "security": ["bearerAuth"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "Content-Type",
+            "required": true
+          },
+          {
+            "in": "header",
+            "name": "Authorization",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "bookId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "The book ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookRespond"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "default": ["OK", "BAD"]
+                    },
+                    "book": {
+                      "$ref": "#/components/schemas/BookRespond"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "BAD",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": "BAD",
+                    "error": {
+                      "type": "object"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Protected"],
+        "summary": "Delete book by book id",
+        "security": ["bearerAuth"],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "bookId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "The book ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "default": ["OK", "BAD"]
+                    },
+                    "books": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "BAD",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": "BAD",
+                    "error": {
+                      "type": "object"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/training": {
+      "get": {
+        "tags": ["Protected"],
+        "description": "Get user training if his have",
+        "summary": "Get training",
+        "security": ["bearerAuth"],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return user training if user created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingRespond"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "If user don't have training",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "default": "BAD",
+                      "example": "BAD"
+                    },
+                    "message": {
+                      "type": "string",
+                      "default": "User not have training",
+                      "example": "User not have training"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Protected"],
+        "description": "Create new training",
+        "summary": "Create new training",
+        "security": ["bearerAuth"],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "description": "",
+          "content": {
+            "applecation/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrainingRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Return created training data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingRespond"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/training/{trainingId}/book/{trainingBookId}": {
+      "patch": {
+        "tags": ["Protected"],
+        "description": "Toggle is book read (checkbox)",
+        "summary": "Toggle is book read (checkbox)",
+        "security": ["bearerAuth"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trainingId",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "bookId",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          },
+          {
+            "in": "header",
+            "name": "Authorization",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "description": "You have choice change one field or all fields",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "isRead": {
+                    "type": "boolean",
+                    "example": true,
+                    "enum": [true, false]
+                  }
+                },
+                "required": ["isRead"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Return udated training data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "default": "OK"
+                    },
+                    "training": {
+                      "$ref": "#/components/schemas/TrainingRespond"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/training/{trainingId}": {
+      "patch": {
+        "tags": ["Protected"],
+        "description": "Update training fields in one level",
+        "summary": "Update training fields in one level",
+        "security": ["bearerAuth"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trainingId",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          },
+          {
+            "in": "header",
+            "name": "Authorization",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "description": "You have choice change one field or all fields",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "isDone": {
+                    "type": "boolean",
+                    "default": true
+                  },
+                  "booksCount": { "type": "number" },
+                  "unreadCount": { "type": "number" },
+                  "readPagesCount": { "type": "number" },
+                  "avgReadPages": { "type": "number" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Return udated training data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "default": "OK"
+                    },
+                    "training": {
+                      "$ref": "#/components/schemas/TrainingRespond"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Protected"],
+        "description": "Hard remove training)",
+        "summary": "Hard remove training)",
+        "security": ["bearerAuth"],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "trainingId",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Return status deleting trainings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "default": "OK",
+                      "example": "OK"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/training/time/{trainingId}": {
+      "post": {
+        "tags": ["Protected"],
+        "description": "Add read pages and time",
+        "summary": "Add read pages and time",
+        "security": ["bearerAuth"],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "trainingId",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "date": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "count": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Return created field data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "default": "OK"
+                    },
+                    "pagesReadResult": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "date": {
+                            "type": "string",
+                            "format": "date"
+                          },
+                          "count": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Protected"],
+        "description": "Remove read pages and time added",
+        "summary": "Remove read pages and time added",
+        "security": ["bearerAuth"],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "trainingId",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "applecation/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "trainingTimeId": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                },
+                "required": ["trainingTimeId"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "default": "OK"
+                    },
+                    "pagesReadResult": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "date": {
+                            "type": "string",
+                            "format": "date"
+                          },
+                          "count": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
