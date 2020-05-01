@@ -5,7 +5,7 @@ const authRouter = require('./auth.router');
 const userRouter = require('./user.router');
 const booksRouter = require('./booksRouter');
 const trainingRouter = require('./training.router');
-// If you want check user auth uncoment
+
 const passportCheck = passport.authenticate('jwt', {
   session: false
 });

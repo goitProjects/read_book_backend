@@ -22,9 +22,9 @@ router
       session: false,
       failureRedirect: 'http://localhost:3000/login?error="auth bad"'
     }),
-    // on succes
+    // on success
     (req, res) => {
-      // return the token or you would wish otherwise give eg. a succes message
+      // return the token or you would wish otherwise give eg. a success message
       res.redirect(
         301,
         `http://localhost:3000/login?token=${req.user.token}&hash`
