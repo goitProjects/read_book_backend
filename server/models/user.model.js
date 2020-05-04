@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 const config = require('../../config/config');
-// Declare the Schema of the Mongo model
+
 const UserSchema = new mongoose.Schema(
   {
     name: {
@@ -28,8 +28,6 @@ const UserSchema = new mongoose.Schema(
     },
     googleId: {
       type: String,
-      // якщо реєструвати двох юзерів без гугла то в них гугл ід буде нул та реєстрації не вийде
-      // unique: true,
       index: true
     },
     haveTraining: {
@@ -42,7 +40,7 @@ const UserSchema = new mongoose.Schema(
   }
 );
 
-UserSchema.methods.getPublicFields = function() {
+UserSchema.methods.getPublicFields = function () {
   const returnObject = {
     userData: {
       name: this.name,
@@ -56,7 +54,7 @@ UserSchema.methods.getPublicFields = function() {
 };
 
 // Saves the user's password hashed (plain text password storage is not good)
-UserSchema.pre('save', function(next) {
+UserSchema.pre('save', function (next) {
   const user = this;
 
   if (
@@ -78,7 +76,7 @@ UserSchema.pre('save', function(next) {
   else return next();
 });
 
-UserSchema.pre('findOneAndUpdate', function(next) {
+UserSchema.pre('findOneAndUpdate', function (next) {
   const update = this.getUpdate();
   // If change password
   // hello callback hell
@@ -94,7 +92,7 @@ UserSchema.pre('findOneAndUpdate', function(next) {
 });
 
 // Create method to compare password input to password saved in database
-UserSchema.methods.comparePassword = function(pw, cb) {
+UserSchema.methods.comparePassword = function (pw, cb) {
   bcrypt.compare(pw, this.password, (err, isMatch) => {
     if (err) return cb(err);
 
@@ -102,16 +100,16 @@ UserSchema.methods.comparePassword = function(pw, cb) {
   });
 };
 
-UserSchema.methods.generateHash = function(password) {
+UserSchema.methods.generateHash = function (password) {
   return bcrypt.hashSync(password, bcrypt.genSalt(10), null);
 };
 
-UserSchema.methods.validatePassword = function(password) {
+UserSchema.methods.validatePassword = function (password) {
   const compare = bcrypt.compareSync(password, this.password);
   return compare;
 };
 
-UserSchema.methods.getJWT = function() {
+UserSchema.methods.getJWT = function () {
   const preToken = jwt.sign(
     {
       id: this._id

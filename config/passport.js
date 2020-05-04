@@ -2,7 +2,6 @@
 const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 const LocalStrategy = require('passport-local').Strategy;
-// const FacebookStrategy = require('passport-facebook').Strategy;
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 const User = require('../server/models/user.model.js');
@@ -18,7 +17,6 @@ module.exports = function(passport) {
 
   passport.use(
     new JwtStrategy(opts, (jwtPayload, done) => {
-      // console.log('jwtPayload', jwtPayload);
       User.findOne(
         {
           _id: jwtPayload.id
